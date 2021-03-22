@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+typedef struct Node{
+    struct Node* R;
+    struct Node* L;
+    char c;
+}node;
+
+char ar[99999];
+int pos;
+node* exr();
+node* fac();
+node* mk(char c);
+void printnode(node* root);
+
+node* exr(){
+    node* r = fac();
+    if(pos==-1 || ar[pos]=='(') return r;
+    
+    node* mid = mk(ar[pos--]);
+    mid->R = r;
+    mid->L = exr();
+    return mid;
+    
+}
+node* fac(){
+    char z = ar[pos--];
+    node* head;
+    if(z==')'){
+        head = exr();
+        pos--;
+    }
+    else{
+        head = mk(z);
+    }
+    return head;
+}
+node* mk(char c){
+    node* head = (node*)malloc(sizeof(node));
+    head->c = c;
+    head->L = NULL;
+    head->R = NULL;
+    return head;
+}
+void printnode(node* root){
+    if(root==NULL) return;
+    printnode(root->L);
+    printf("%c",root->c);
+    if(root->R!=NULL){
+        if(root->R->c=='&' || root->R->c=='|'){
+            printf("(");
+            printnode(root->R);
+            printf(")");
+        }
+        else{
+            printnode(root->R);
+        }
+    }
+}
+
+int main(){
+    scanf("%s",ar);
+    pos = (int)strlen(ar)-1;
+    node* root = exr();
+    printnode(root);
+    return 0;
+}
