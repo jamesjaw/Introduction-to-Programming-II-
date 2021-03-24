@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int arr[200005];
+typedef struct Node{
+    struct Node* R;
+    struct Node* L;
+    int val;
+}node;
+int f = 0;
+int pos = 0;
+node* bul(int min,int max){
+    if(pos<0) return NULL;
+    int nownum = arr[pos];
+    
+    if(nownum<min||nownum>max) return NULL;
+    pos--;
+    node* root = (node*)malloc(sizeof(node));
+    root->val = nownum;
+    root->R = bul(nownum+1, max);
+    root->L = bul(min, nownum-1);
+    
+    return root;
+}
+void tral(node* root){
+    if(root==NULL) return;
+    printf("%d",root->val);
+    if(f!=0){
+        printf(" ");
+        f--;
+    }
+    tral(root->L);
+    tral(root->R);
+}
+int main(){
+    int count = 0;
+    while(~scanf("%d",&arr[count++]));
+    //printf("ccc=%d",count);
+    count--;
+    f = count-1;
+    pos = f;
+    node* root = bul(-2147483647, 2147483647);
+    tral(root);
+    //printf("%d",root->R->val);
+    printf("\n");
+    return 0;
+}
