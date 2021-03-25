@@ -24,7 +24,7 @@ BTNode* makeNode(char c);
 
 BTNode* EXPR(){
     BTNode* R = FACTOR();
-    if(pos==-1||expr[pos]=='(') return R;
+    if(pos==-1||expr[pos]=='(') return R;   //pos--放在這更直覺一點
     BTNode* M = makeNode(expr[pos--]);
     M->right = R;
     M->left = EXPR();
@@ -35,7 +35,7 @@ BTNode* FACTOR(){
     char z = expr[pos--];
     if(z==')'){
             head = EXPR();
-            pos--;
+            pos--;             //pos--在這
         }
     else{
         head = makeNode(z);
