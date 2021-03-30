@@ -1,0 +1,56 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+typedef struct Node{
+    int ar[30];
+    int pos;
+    int cap;
+}node;
+char ar[6];
+int zzz(){
+    scanf(" %c%c%c%c",&ar[0],&ar[1],&ar[2],&ar[3]);
+    if(ar[0]=='m') return 1;
+    else if(ar[0]=='p') return 2;
+    else if(ar[0]=='e') return 0;
+    else if(ar[1]=='n') return 4;
+    else if(ar[1]=='v') return 5;
+    else return 0;
+}
+int main(){
+    int n;
+    scanf("%d",&n);
+    node* root = (node*)malloc(sizeof(node));
+    for(int i=0;i<n;i++){
+        root[i].ar[0] = i;
+        root[i].pos = 0;
+        root[i].cap = 1;
+    }
+    int z = zzz();
+    while(z){
+        if(z=='1'){
+            int A,B,x;
+            scanf("%d",&A);
+            x = zzz();
+            scanf("%d",&B);
+            if(x==4){
+                for(int i=)
+            }
+            else if(x==5){
+                
+            }
+        }
+        else if(z=='2'){
+            int A,B,x;
+            scanf("%d",&A);
+            x = zzz();
+            scanf("%d",&B);
+            if(x==4){
+                
+            }
+            else if(x==5){
+                
+            }
+        }
+    }
+    return 0;
+}
