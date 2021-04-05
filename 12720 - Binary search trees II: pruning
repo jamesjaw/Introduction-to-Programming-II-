@@ -1,0 +1,89 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+typedef struct Node{
+    int no;
+    struct Node* L;
+    struct Node* R;
+}node;
+
+//node* root;
+
+void dooo(node* root){
+    if(root->L==NULL && root->R==NULL){
+        root->no = -1;
+        return;
+    }
+    else if(root->L!=NULL&&root->R==NULL){
+        dooo(root->L);
+        root->no = (root->L->no) - 1;
+    }
+    else if(root->R!=NULL&&root->R==NULL){
+        dooo(root->R);
+        root->no = (root->R->no) - 1;
+    }
+    else{
+        dooo(root->L);
+        dooo(root->R);
+        root->no = ((root->L->no) < (root->R->no) ? (root->L->no) : (root->R->no)) - 1;
+    }
+
+}
+
+void doit(node* root,int min ,int max){
+    if(root->L==NULL && root->R==NULL) return;
+    if(root->R!=NULL){
+        if(root->R->no > root->no && root->R->no < max){
+            doit(root->R, root->no, max);
+        }
+        else dooo(root->R);
+    }
+    if(root->L!=NULL){
+        if(root->L->no < root->no && root->L->no > min){
+            doit(root->L, min, root->no);
+        }
+        else dooo(root->L);
+    }
+}
+
+
+
+int main(){
+    int n;
+    scanf("%d",&n);
+    node* root = (node*)malloc(sizeof(node)*(n+2));
+    for(int i=1;i<=n;i++){
+        int z;
+        scanf("%d",&z);
+        root[i].no = z;
+        root[i].L = NULL;
+        root[i].R = NULL;
+    }
+    int pos=2;
+    for(int i=1;i<=n;i++){
+        int z;
+        scanf("%d",&z);
+        if(z!=0){
+            char c;
+            c = getchar();
+            if(c=='R'){
+                root[z].R = &root[i];
+            }
+            else if(c=='L'){
+                root[z].L = &root[i];
+            }
+        }
+        else{
+            pos = i;
+        }
+    }
+    doit(&root[pos],-21,2147000000);
+    
+    for(int i=1;i<=n;i++){
+        printf("%d",root[i].no);
+        if(i!=n) printf(" ");
+    }
+    printf("\n");
+    //printf("%d",root[1].R->L->L->no);
+    return 0;
+}
