@@ -5,9 +5,9 @@ typedef struct Node{
     struct Node* R;
     struct Node* L;
     char c;
-    int val;
+    unsigned int val;
 }node;
-int p,q;
+unsigned int p,q;
 void cal(node* root){
     if(root->c=='n'){
         return;
@@ -15,7 +15,8 @@ void cal(node* root){
     else if(root->c=='f'){
         cal(root->L);
         cal(root->R);
-        root->val = ((((root->L->val)%q)*(p%q))%q + (root->R->val)%q)%q;
+        unsigned long long R = ((((unsigned long long)root->L->val)%q)*((unsigned long long)p%q))%q;
+        root->val = ((unsigned int)R + (root->R->val)%q)%q;
     }
 }
 node* bul(){
@@ -32,10 +33,10 @@ node* bul(){
     }
     else{
         ungetc(cc, stdin);
-        int z;
-        scanf("%d",&z);
+        unsigned int z;
+        scanf("%u",&z);
         root->c = 'n';
-        root->val = z;
+        root->val = z%q;
         root->L = NULL;
         root->R = NULL;
     }
@@ -43,10 +44,10 @@ node* bul(){
 }
 int main(){
     
-    scanf("%d %d",&p,&q);
+    scanf("%u %u",&p,&q);
     node* head = bul();
     cal(head);
     
-    printf("%d\n",head->val%q);
+    printf("%u\n",head->val);
     return 0;
 }
