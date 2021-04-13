@@ -132,44 +132,52 @@ int main(){
     }
     int z = zzz();
     while(z){
+        //printf("z: %d\n", z);
         if(z==1){
             int A,B,x;
             scanf("%d",&A);
             x = zzz();
             scanf("%d",&B);
-            if(pos[A]==pos[B]) continue;
-            if(x==4){
-                moveonto(A, B);
+            if(pos[A]!=pos[B]){
+                if(x==4){
+                                moveonto(A, B);
+                            }
+                            else if(x==5){
+                                moveover(A, B);
+                            }
             }
-            else if(x==5){
-                moveover(A, B);
-            }
+            
         }
         else if(z==2){
             int A,B,x;
             scanf("%d",&A);
             x = zzz();
+            //printf("x: %d\n", x);
             scanf("%d",&B);
-            if(pos[A]==pos[B]) continue;
-            if(x==4){
-                pileonto(A, B);
-            }
-            else if(x==5){
-                pileover(A, B);
+            if(pos[A]!=pos[B]){
+                if(x==4){
+                    pileonto(A, B);
+                }
+                else if(x==5){
+                    pileover(A, B);
+                }
             }
         }
+        
+       
         z = zzz();
     }
     for(int i=0;i<n;i++){
-        printf("%d:",i);
-        node* t = head[i].up;
-        while(t!=NULL){
-            printf(" %d",t->no);
-            //printf("pos%d",pos[t->no]);
-            t = t->up;
-        }
-        printf("\n");
-    }
+           printf("%d:",i);
+           node* t = head[i].up;
+           while(t!=NULL){
+               printf(" %d",t->no);
+               //printf("pos%d",pos[t->no]);
+               t = t->up;
+           }
+           printf("\n");
+       }
     return 0;
 }
+
 
