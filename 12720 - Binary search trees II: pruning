@@ -1,89 +1,83 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 typedef struct Node{
-    int no;
     struct Node* L;
     struct Node* R;
+    int id;
 }node;
-
-//node* root;
-
-void dooo(node* root){
-    if(root->L==NULL && root->R==NULL){
-        root->no = -1;
+int doo(node* node){
+    if(node->L==NULL&&node->R==NULL){
+        node->id = -1;
+        return 2;
+    }
+    int Llev = 0;
+    int Rlev = 0;
+    if(node->L!=NULL) Llev = doo(node->L);
+    if(node->R!=NULL) Rlev = doo(node->R);
+    int leve = Llev>Rlev?Llev:Rlev;
+    //printf("node%dleve is %d\n",node->id,leve);
+    node->id = leve * -1;
+    return leve+1;
+    
+}
+void finder(node* node,int L,int R){
+    //printf("node = %d L = %d R = %d\n",node->id,L,R);
+    if(node->id<L || node->id>R){
+        doo(node);
+        //printf("find error\n");
         return;
     }
-    else if(root->L!=NULL&&root->R==NULL){
-        dooo(root->L);
-        root->no = (root->L->no) - 1;
+    if(node->L==NULL && node->R==NULL){
+        //printf("fuck");
+        return;
     }
-    else if(root->R!=NULL&&root->R==NULL){
-        dooo(root->R);
-        root->no = (root->R->no) - 1;
+    if(node->R!=NULL){
+        finder(node->R, node->id, R);
     }
-    else{
-        dooo(root->L);
-        dooo(root->R);
-        root->no = ((root->L->no) < (root->R->no) ? (root->L->no) : (root->R->no)) - 1;
-    }
-
-}
-
-void doit(node* root,int min ,int max){
-    if(root->L==NULL && root->R==NULL) return;
-    if(root->R!=NULL){
-        if(root->R->no > root->no && root->R->no < max){
-            doit(root->R, root->no, max);
-        }
-        else dooo(root->R);
-    }
-    if(root->L!=NULL){
-        if(root->L->no < root->no && root->L->no > min){
-            doit(root->L, min, root->no);
-        }
-        else dooo(root->L);
+    if(node->L!=NULL){
+        finder(node->L, L, node->id);
     }
 }
-
-
 
 int main(){
     int n;
     scanf("%d",&n);
-    node* root = (node*)malloc(sizeof(node)*(n+2));
-    for(int i=1;i<=n;i++){
-        int z;
-        scanf("%d",&z);
-        root[i].no = z;
-        root[i].L = NULL;
-        root[i].R = NULL;
-    }
-    int pos=2;
-    for(int i=1;i<=n;i++){
-        int z;
-        scanf("%d",&z);
-        if(z!=0){
-            char c;
-            c = getchar();
-            if(c=='R'){
-                root[z].R = &root[i];
-            }
-            else if(c=='L'){
-                root[z].L = &root[i];
-            }
-        }
-        else{
-            pos = i;
-        }
-    }
-    doit(&root[pos],-21,2147000000);
     
+    node* tree = (node*)malloc(sizeof(node)*(n+1));
     for(int i=1;i<=n;i++){
-        printf("%d",root[i].no);
-        if(i!=n) printf(" ");
+        int num;
+        scanf("%d",&num);
+        tree[i].id = num;
+        tree[i].L = NULL;
+        tree[i].R = NULL;
+    }
+    node* head = NULL;
+    for(int i=1;i<=n;i++){
+        int z;
+        scanf("%d",&z);
+        if(z==0){
+            head = &tree[i];
+        }
+        if(z!=0){
+            char p;
+            scanf(" %c",&p);
+            if(p=='R'){
+                tree[z].R = &tree[i];
+                //printf("r\n");
+            }
+            else if(p=='L'){
+                tree[z].L = &tree[i];
+                //printf("l\n");
+            }
+        }
+    }
+    finder(head, -214700000, 214700000);
+    for(int i=1;i<=n;i++){
+        //printf("node%d=",i);
+        printf("%d",tree[i].id);
+        if(i!=n)printf(" ");
     }
     printf("\n");
-    //printf("%d",root[1].R->L->L->no);
+    
     return 0;
 }
