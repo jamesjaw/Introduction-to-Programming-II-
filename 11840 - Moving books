@@ -1,183 +1,102 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-typedef struct Node{
-    struct Node* up;
-    struct Node* dw;
+
+typedef struct N{
+    struct N* up;
+    struct N* dw;
     int no;
 }node;
+node** top;
+node* bot;
+int pos[26];
+char oder[6];
 
-char ar[6];
-int pos[30];
-node* head;
-node* tail;
-int zzz(){
-    scanf(" %c%c%c%c",&ar[0],&ar[1],&ar[2],&ar[3]);
-    //printf("w=%c%c%c%c\n",ar[0],ar[1],ar[2],ar[3]);
-    if(ar[0]=='m') return 1;
-    else if(ar[0]=='p') return 2;
-    else if(ar[0]=='e') return 0;
-    else if(ar[1]=='n') return 4;
-    else if(ar[1]=='v') return 5;
-    else return 3;
+void ref(int a){
+    node* temp = top[pos[a]];
+    while(temp->no!=a){
+        top[pos[a]]->dw->up = NULL;
+        top[pos[a]] = top[pos[a]]->dw;
+        top[temp->no]->up = temp;
+        temp->dw = top[temp->no];
+        top[temp->no] = temp;
+        pos[temp->no] = temp->no;
+        temp = top[pos[a]];
+    }
 }
-void moveonto(int a,int b){
-    if(pos[a]==pos[b])return;
-    node* tempA = tail[pos[a]].dw;
-    while(tempA->no!=a){
-        node* t = tempA;
-        tempA = tempA->dw;
-        tail[pos[a]].dw = t->dw;
-        t->dw->up = NULL;
-        t->dw = tail[t->no].dw;
-        tail[t->no].dw->up = t;
-        tail[t->no].dw = t;
-        pos[t->no] = t->no;
+void mov(int a,int b){
+    node* tempa = top[pos[a]];
+    node* tempb = top[pos[b]];
+    while(tempa->no!=a){
+        pos[tempa->no] = pos[b];
+        tempa = tempa->dw;
     }
-    node* tempB = tail[pos[b]].dw;
-    while(tempB->no!=b){
-        node* t = tempB;
-        tempB = tempB->dw;
-        tail[pos[b]].dw = t->dw;
-        t->dw->up = NULL;
-        t->dw = tail[t->no].dw;
-        tail[t->no].dw->up = t;
-        tail[t->no].dw = t;
-        pos[t->no] = t->no;
-    }
-    tempB->up = tempA;
-    tail[pos[a]].dw = tempA->dw;
-    tempA->dw->up = NULL;
-    tail[pos[b]].dw = tempA;
-    tempA->dw = tempB;
-    pos[a] = pos[b];
+    top[pos[b]] = top[pos[a]];
+    top[pos[a]] = tempa->dw;
+    tempa->dw->up = NULL;
+    tempa->dw = tempb;
+    tempb->up = tempa;
+    pos[tempa->no] = pos[b];
 }
-void moveover(int a,int b){
-    if(pos[a]==pos[b])return;
-    node* tempA = tail[pos[a]].dw;
-    while(tempA->no!=a){
-        node* t = tempA;
-        tempA = tempA->dw;
-        tail[pos[a]].dw = t->dw;
-        t->dw->up = NULL;
-        t->dw = tail[t->no].dw;
-        tail[t->no].dw->up = t;
-        tail[t->no].dw = t;
-        pos[t->no] = t->no;
-    }
-    node* tempB = tail[pos[b]].dw;
-    
-    tempB->up = tempA;
-    tail[pos[a]].dw = tempA->dw;
-    tempA->dw->up = NULL;
-    tail[pos[b]].dw = tempA;
-    tempA->dw = tempB;
-    pos[a] = pos[b];
-}
-void pileonto(int a,int b){
-    if(pos[a]==pos[b])return;
-    node* tempA = tail[pos[a]].dw;
-    while(tempA->no!=a){
-        pos[tempA->no] = pos[b];
-        tempA = tempA->dw;
-    }
-    node* tempB = tail[pos[b]].dw;
-    while(tempB->no!=b){
-        node* t = tempB;
-        tempB = tempB->dw;
-        tail[pos[b]].dw = t->dw;
-        t->dw->up = NULL;
-        t->dw = tail[t->no].dw;
-        tail[t->no].dw->up = t;
-        tail[t->no].dw = t;
-        pos[t->no] = t->no;
-    }
-    tempB->up = tempA;
-    tail[pos[b]].dw = tail[pos[a]].dw;
-    tail[pos[a]].dw = tempA->dw;
-    tempA->dw->up = NULL;
-    tempA->dw = tempB;
-    pos[a] = pos[b];
-}
-void pileover(int a,int b){
-    if(pos[a]==pos[b])return;
-    node* tempA = tail[pos[a]].dw;
-    while(tempA->no!=a){
-        pos[tempA->no] = pos[b];
-        tempA = tempA->dw;
-    }
-    node* tempB = tail[pos[b]].dw;
-    
-    tempB->up = tempA;
-    tail[pos[b]].dw = tail[pos[a]].dw;
-    tail[pos[a]].dw = tempA->dw;
-    tempA->dw->up = NULL;
-    tempA->dw = tempB;
-    pos[a] = pos[b];
-}
-
 int main(){
     int n;
     scanf("%d",&n);
-    head = (node*)malloc(sizeof(node)*n);
-    tail = (node*)malloc(sizeof(node)*n);
+    top = (node**)malloc(sizeof(node*)*n);
+    bot = (node*)malloc(sizeof(node)*n);
     for(int i=0;i<n;i++){
+        bot[i].dw = NULL;
+        bot[i].up = (node*)malloc(sizeof(node));
+        top[i] = bot[i].up;
+        bot[i].up->up = NULL;
+        bot[i].up->dw = &bot[i];
+        bot[i].up->no = i;
+        bot[i].no = -1;
         pos[i] = i;
-        head[i].up = (node*)malloc(sizeof(node));
-        tail[i].dw = head[i].up;
-        head[i].up->no = i;
-        head[i].up->dw = &head[i];
-        head[i].up->up = NULL;
-        head[i].no = -1;
     }
-    int z = zzz();
-    while(z){
-        //printf("z: %d\n", z);
-        if(z==1){
-            int A,B,x;
-            scanf("%d",&A);
-            x = zzz();
-            scanf("%d",&B);
-            if(pos[A]!=pos[B]){
-                if(x==4){
-                                moveonto(A, B);
-                            }
-                            else if(x==5){
-                                moveover(A, B);
-                            }
-            }
-            
-        }
-        else if(z==2){
-            int A,B,x;
-            scanf("%d",&A);
-            x = zzz();
-            //printf("x: %d\n", x);
-            scanf("%d",&B);
-            if(pos[A]!=pos[B]){
-                if(x==4){
-                    pileonto(A, B);
+    while(1){
+        scanf("%s",oder);
+        if(oder[0]=='e') break;
+        else if(oder[0]=='m'){
+            int a,b;
+            scanf("%d",&a);
+            scanf("%s",oder);
+            scanf("%d",&b);
+            if(pos[a]!=pos[b]){
+                if(oder[1]=='n'){
+                    ref(a);
+                    ref(b);
+                    mov(a,b);
                 }
-                else if(x==5){
-                    pileover(A, B);
+                else if(oder[1]=='v'){
+                    ref(a);
+                    mov(a,b);
                 }
             }
         }
-        
-       
-        z = zzz();
+        else if(oder[0]=='p'){
+            int a,b;
+            scanf("%d",&a);
+            scanf("%s",oder);
+            scanf("%d",&b);
+            if(pos[a]!=pos[b]){
+                if(oder[1]=='n'){
+                    ref(b);
+                    mov(a,b);
+                }
+                else if(oder[1]=='v'){
+                    mov(a,b);
+                }
+            }
+        }
     }
     for(int i=0;i<n;i++){
-           printf("%d:",i);
-           node* t = head[i].up;
-           while(t!=NULL){
-               printf(" %d",t->no);
-               //printf("pos%d",pos[t->no]);
-               t = t->up;
-           }
-           printf("\n");
-       }
+        printf("%d:",i);
+        node* temp = bot[i].up;
+        while(temp!=NULL){
+            printf(" %d",temp->no);
+            temp = temp->up;
+        }
+        printf("\n");
+    }
     return 0;
 }
-
-
