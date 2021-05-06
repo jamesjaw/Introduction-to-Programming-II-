@@ -29,7 +29,7 @@ Str::Str(const Str & a){
 }
 
 Str& Str::strInsert(const Str & a){
-    Str* cop = new Str(a);
+    Str* cop = new Str(a);    //要用動態宣告 
     tail->next = cop->head;
     tail = cop->tail;
     return *this;
