@@ -1,7 +1,7 @@
-#include "13144.h"
 #include <iostream>
 #include <cstring>
 #include <iomanip>
+#include "13144.h"
 using namespace std;
 
 BigInt::BigInt(){
@@ -22,14 +22,14 @@ BigInt::BigInt(char* a){
     for(i = size-1;i > 7;i -= 8){
         int temp = 0;
         for(int j = i-7;j<=i;j++){  //???
-            temp *= 0;
+            temp *= 10;
             temp += a[j] - '0';
         }
         bigInt[idx++] = temp;
     }
     int temp = 0;
     for(int j=0;j<=i;j++){  //???
-        temp *= 0;
+        temp *= 10;
         temp += a[j]-'0';
     }
     bigInt[idx++] = temp;
@@ -55,7 +55,7 @@ bool BigInt::operator < (BigInt a){
     if(this->sign==true && a.sign==false) return false;
     else if(this->sign==false && a.sign==true) return true;
     else{
-        for(int i=N;i>=0;i--){
+        for(int i=N-1;i>=0;i--){
             if(bigInt[i]<a.bigInt[i]){
                 if(sign==true) return true;
                 else return false;
@@ -73,7 +73,7 @@ bool BigInt::operator > (BigInt a){
     if(this->sign==true && a.sign==false) return true;
     else if(this->sign==false && a.sign==true) return false;
     else{
-        for(int i=N;i>=0;i--){
+        for(int i=N-1;i>=0;i--){
             if(bigInt[i]<a.bigInt[i]){
                 if(sign==true) return false;
                 else return true;
@@ -106,11 +106,13 @@ BigInt BigInt::operator - (BigInt r){
     for(int i=0;i<N;i++){
         anw.bigInt[i] = 0;
     }
+    
     if(this->sign == false){
+        anw.sign = false;
         for(int i=0;i<N;i++){
             anw.bigInt[i] += this->bigInt[i] + r.bigInt[i];
-            if(anw.bigInt[i]>BASE){
-                anw.bigInt[i] = anw.bigInt[i]%BASE;
+            if(anw.bigInt[i]>=BASE){   //
+                anw.bigInt[i] = anw.bigInt[i] - BASE;  //
                 anw.bigInt[i+1] += 1;
             }
         }
@@ -122,6 +124,12 @@ BigInt BigInt::operator - (BigInt r){
                 if(r.bigInt[i] < this->bigInt[i]){
                     r.bigInt[i+1] -= 1;
                     r.bigInt[i] += BASE;
+                    anw.bigInt[i] = r.bigInt[i] - this->bigInt[i];
+                }
+                else if(r.bigInt[i] == this->bigInt[i]){
+                    anw.bigInt[i] = 0;
+                }
+                else if(r.bigInt[i] > this->bigInt[i]){
                     anw.bigInt[i] = r.bigInt[i] - this->bigInt[i];
                 }
             }
@@ -138,6 +146,12 @@ BigInt BigInt::operator - (BigInt r){
                 if(this->bigInt[i] < r.bigInt[i]){
                     this->bigInt[i+1] -= 1;
                     this->bigInt[i] += BASE;
+                    anw.bigInt[i] = this->bigInt[i] - r.bigInt[i];
+                }
+                else if(this->bigInt[i] == r.bigInt[i]){
+                    anw.bigInt[i] = 0;
+                }
+                else if(this->bigInt[i] > r.bigInt[i]){
                     anw.bigInt[i] = this->bigInt[i] - r.bigInt[i];
                 }
             }
