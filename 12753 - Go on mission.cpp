@@ -20,7 +20,7 @@ BigInt::BigInt(char* a){
     int idx = 0;
     int i = 0;
     for(i = size-1;i > 7;i -= 8){
-        int temp = 0;
+        int temp = 0;              //!!!!!!!!!!!!!!!!!!!!!!記得歸零（宣告在外面的話）
         for(int j = i-7;j<=i;j++){  //???
             temp *= 10;
             temp += a[j] - '0';
