@@ -59,7 +59,7 @@ int main(){
             }
         }
         //heal
-        if(now.hp + heal_and_damg[now.lv][0] <= my_hp && now.hp - boss_damg + heal_and_damg[now.lv][0] > 0){
+        if(now.hp + heal_and_damg[now.lv][0] <= my_hp && now.hp - boss_damg + heal_and_damg[now.lv][0] > 0){ // 條件判斷要注意
             if(state[now.lv][now.hp - boss_damg + heal_and_damg[now.lv][0]][now.b_hp] == 0){
                 state[now.lv][now.hp - boss_damg + heal_and_damg[now.lv][0]][now.b_hp] = 1;
                 ste n;
