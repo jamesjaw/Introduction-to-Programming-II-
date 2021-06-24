@@ -31,23 +31,23 @@ int main(){
                 }
                 else{
                     //cout<<"us_x\n";
-                    /*
-                    for(auto v:QQ){
+                    
+                    for(auto& v:QQ){
                         if(v.first == 0){
                             v.second.push(num);
                             us++;
                             break;
                         }
                     }
-                    */
                     
+                    /*
                     auto it = QQ.begin();
                     for(;it!=QQ.end();++it){
                         if(((*it).second.front())%3 == num % 3) break;
                     }
                     if(it!=QQ.end()) (*it).second.push(num);
                     us++;
-                     
+                     */
                 }
             }
             //af
@@ -60,21 +60,22 @@ int main(){
                     af++;
                 }
                 else{
-                    /*
-                    for(auto v:QQ){
+                    
+                    for(auto& v:QQ){
                         if(v.first == 1){
                             v.second.push(num);
                             af++;
                             break;
                         }
                     }
-                     */
+                    /*
                     auto it = QQ.begin();
                     for(;it!=QQ.end();++it){
                         if(((*it).second.front())%3 == num % 3) break;
                     }
                     if(it!=QQ.end()) (*it).second.push(num);
                     af++;
+                    */
                 }
             }
             //jp
@@ -87,21 +88,22 @@ int main(){
                     jp++;
                 }
                 else{
-                    /*
-                    for(auto v:QQ){
+                    
+                    for(auto& v:QQ){
                         if(v.first == 2){
                             v.second.push(num);
                             jp++;
                             break;
                         }
                     }
-                     */
+                    /*
                     auto it = QQ.begin();
                     for(;it!=QQ.end();++it){
                         if(((*it).second.front())%3 == num % 3) break;
                     }
                     if(it!=QQ.end()) (*it).second.push(num);
                     jp++;
+                     */
                 }
             }
         }
@@ -135,3 +137,4 @@ int main(){
      */
     return 0;
 }
+
