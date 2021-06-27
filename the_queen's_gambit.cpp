@@ -14,6 +14,16 @@ const int SIZE = 8;
 std::array<std::array<int, SIZE>, SIZE> board;
 std::vector<Point> next_valid_spots;
 
+int value_map[64] = {90,-60,10,10,10,10,-60,90,
+                     -60,-80,5,5,5,5,-80,-60,
+                     10,5,1,1,1,1,5,10,
+                     10,5,1,1,1,1,5,10,
+                     10,5,1,1,1,1,5,10,
+                     10,5,1,1,1,1,5,10,
+                     -60,-80,5,5,5,5,-80,-60,
+                     90,-60,10,10,10,10,-60,90};
+
+
 void read_board(std::ifstream& fin) {
     fin >> player;
     for (int i = 0; i < SIZE; i++) {
@@ -39,10 +49,35 @@ void write_valid_spot(std::ofstream& fout) {
     // Choose random spot. (Not random uniform here)
     int index = (rand() % n_valid_spots);
     Point p = next_valid_spots[index];
+    ///The Queen's Gambit
+
+
+
     // Remember to flush the output to ensure the last action is written to file.
+    ///output my choose
     fout << p.x << " " << p.y << std::endl;
     fout.flush();
 }
+
+struct state{
+    int b[8][8];
+    int step;
+    int Q_value;
+    
+    state(std::array<std::array<int, SIZE>, SIZE> a){
+        for(int i=0;i<8;i++){
+            for(int j=0;j<8;j++){
+                b[i][j] = a[i][j];
+            }
+        }
+        step = 0;
+        Q_value = 0;
+    }
+    state(state& a){
+        for()
+    }
+    
+};
 
 int main(int, char** argv) {
     std::ifstream fin(argv[1]);
@@ -54,4 +89,3 @@ int main(int, char** argv) {
     fout.close();
     return 0;
 }
-
