@@ -5,23 +5,33 @@
 #include <cstdlib>
 #include <ctime>
 
+#include <sstream>
+
+int value_map[64] = {90,-60,10,10,10,10,-60,90,
+                     -60,-80,5,5,5,5,-80,-60,
+                     10,5,1,1,1,1,5,10,
+                     10,5,1,1,1,1,5,10,
+                     10,5,1,1,1,1,5,10,
+                     10,5,1,1,1,1,5,10,
+                     -60,-80,5,5,5,5,-80,-60,
+                     90,-60,10,10,10,10,-60,90};
 
 struct Point {
     int x, y;
-	Point() : Point(0, 0) {}
-	Point(float x, float y) : x(x), y(y) {}
-	bool operator==(const Point& rhs) const {
-		return x == rhs.x && y == rhs.y;
-	}
-	bool operator!=(const Point& rhs) const {
-		return !operator==(rhs);
-	}
-	Point operator+(const Point& rhs) const {
-		return Point(x + rhs.x, y + rhs.y);
-	}
-	Point operator-(const Point& rhs) const {
-		return Point(x - rhs.x, y - rhs.y);
-	}
+    Point() : Point(0, 0) {}
+    Point(float x, float y) : x(x), y(y) {}
+    bool operator==(const Point& rhs) const {
+        return x == rhs.x && y == rhs.y;
+    }
+    bool operator!=(const Point& rhs) const {
+        return !operator==(rhs);
+    }
+    Point operator+(const Point& rhs) const {
+        return Point(x + rhs.x, y + rhs.y);
+    }
+    Point operator-(const Point& rhs) const {
+        return Point(x - rhs.x, y - rhs.y);
+    }
 };
 
 class OthelloBoard {
@@ -43,6 +53,11 @@ public:
     int cur_player;
     bool done;
     int winner;
+    
+    int alpha;
+    int beta;
+    int Q_value;
+    
 private:
     int get_next_player(int player) const {
         return 3 - player;
@@ -104,9 +119,65 @@ private:
         }
     }
 public:
-    OthelloBoard() {
-        reset();
+    //consturct
+    OthelloBoard(std::array<std::array<int, SIZE>, SIZE> a) {
+        for(int i=0;i<SIZE;i++){
+            for(int j=0;j<SIZE;j++){
+                board[i][j] = a[i][j];
+                disc_count[board[i][j]]++;
+            }
+        }
+        cur_player = (disc_count[WHITE] + disc_count[BLACK])%2 == 0? BLACK:WHITE;
+        next_valid_spots = get_valid_spots();
+        done = false;
+        winner = -1;
+        alpha = -214700000;
+        beta = 214700000;
     }
+    
+    //copy
+    OthelloBoard(OthelloBoard& a){
+        for(int i=0;i<SIZE;i++){
+            for(int j=0;j<SIZE;j++){
+                board[i][j] = a.board[i][j];
+            }
+        }
+        disc_count[EMPTY] = a.disc_count[EMPTY];
+        disc_count[BLACK] = a.disc_count[BLACK];
+        disc_count[WHITE] = a.disc_count[WHITE];
+        cur_player = a.cur_player;
+        alpha = a.alpha;
+        beta = a.beta;
+        done = a.done;
+        winner = a.winner;
+        
+        //remember to update next_valid_spots
+        
+    }
+    //count Q_value
+    void set_Q_value(){
+        int my_Q = 0;
+        int you_Q = 0;
+        for(int i=0;i<SIZE;i++){
+            for(int j=0;j<SIZE;j++){
+                if(board[i][j] == EMPTY){
+                    //do nothing
+                }
+                else if(board[i][j] == cur_player){
+                    my_Q += value_map[board[i][j]];
+                }
+                else{
+                    you_Q += value_map[board[i][j]];
+                }
+            }
+        }
+        Q_value = my_Q - you_Q;
+        //
+        Q_value += next_valid_spots.size() * 3;
+        //
+    }
+    
+    
     void reset() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
@@ -165,6 +236,7 @@ public:
         }
         return true;
     }
+    /*
     std::string encode_player(int state) {
         if (state == BLACK) return "O";
         if (state == WHITE) return "X";
@@ -227,25 +299,19 @@ public:
         }
         return ss.str();
     }
+    */
 };
-
+/*
 struct Point {
     int x, y;
 };
+*/
+
 
 int player;
 const int SIZE = 8;
 std::array<std::array<int, SIZE>, SIZE> board;
 std::vector<Point> next_valid_spots;
-
-int value_map[64] = {90,-60,10,10,10,10,-60,90,
-                     -60,-80,5,5,5,5,-80,-60,
-                     10,5,1,1,1,1,5,10,
-                     10,5,1,1,1,1,5,10,
-                     10,5,1,1,1,1,5,10,
-                     10,5,1,1,1,1,5,10,
-                     -60,-80,5,5,5,5,-80,-60,
-                     90,-60,10,10,10,10,-60,90};
 
 
 void read_board(std::ifstream& fin) {
@@ -260,7 +326,7 @@ void read_board(std::ifstream& fin) {
 void read_valid_spots(std::ifstream& fin) {
     int n_valid_spots;
     fin >> n_valid_spots;
-    int x, y;
+    float x, y;
     for (int i = 0; i < n_valid_spots; i++) {
         fin >> x >> y;
         next_valid_spots.push_back({x, y});
@@ -283,25 +349,6 @@ void write_valid_spot(std::ofstream& fout) {
     fout.flush();
 }
 
-struct state{
-    int b[8][8];
-    int step;
-    int Q_value;
-    
-    state(std::array<std::array<int, SIZE>, SIZE> a){
-        for(int i=0;i<8;i++){
-            for(int j=0;j<8;j++){
-                b[i][j] = a[i][j];
-            }
-        }
-        step = 0;
-        Q_value = 0;
-    }
-    state(state& a){
-        for()
-    }
-    
-};
 
 int main(int, char** argv) {
     std::ifstream fin(argv[1]);
