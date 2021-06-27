@@ -57,6 +57,9 @@ public:
     int alpha;
     int beta;
     int Q_value;
+    int deth;
+    OthelloBoard* parent = nullptr;
+    std::vector<OthelloBoard> child;
     
 private:
     int get_next_player(int player) const {
@@ -133,6 +136,7 @@ public:
         winner = -1;
         alpha = -214700000;
         beta = 214700000;
+        deth = 0;
     }
     
     //copy
@@ -151,6 +155,8 @@ public:
         done = a.done;
         winner = a.winner;
         
+        deth = a.deth + 1;
+        parent = &a;
         //remember to update next_valid_spots
         
     }
@@ -176,8 +182,7 @@ public:
         Q_value += next_valid_spots.size() * 3;
         //
     }
-    
-    
+
     void reset() {
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
@@ -236,76 +241,27 @@ public:
         }
         return true;
     }
-    /*
-    std::string encode_player(int state) {
-        if (state == BLACK) return "O";
-        if (state == WHITE) return "X";
-        return "Draw";
-    }
-    std::string encode_spot(int x, int y) {
-        if (is_spot_valid(Point(x, y))) return ".";
-        if (board[x][y] == BLACK) return "O";
-        if (board[x][y] == WHITE) return "X";
-        return " ";
-    }
-    std::string encode_output(bool fail=false) {
-        int i, j;
-        std::stringstream ss;
-        ss << "Timestep #" << (8*8-4-disc_count[EMPTY]+1) << "\n";
-        ss << "O: " << disc_count[BLACK] << "; X: " << disc_count[WHITE] << "\n";
-        if (fail) {
-            ss << "Winner is " << encode_player(winner) << " (Opponent performed invalid move)\n";
-        } else if (next_valid_spots.size() > 0) {
-            ss << encode_player(cur_player) << "'s turn\n";
-        } else {
-            ss << "Winner is " << encode_player(winner) << "\n";
-        }
-        ss << "+---------------+\n";
-        for (i = 0; i < SIZE; i++) {
-            ss << "|";
-            for (j = 0; j < SIZE-1; j++) {
-                ss << encode_spot(i, j) << " ";
-            }
-            ss << encode_spot(i, j) << "|\n";
-        }
-        ss << "+---------------+\n";
-        ss << next_valid_spots.size() << " valid moves: {";
-        if (next_valid_spots.size() > 0) {
-            Point p = next_valid_spots[0];
-            ss << "(" << p.x << "," << p.y << ")";
-        }
-        for (size_t i = 1; i < next_valid_spots.size(); i++) {
-            Point p = next_valid_spots[i];
-            ss << ", (" << p.x << "," << p.y << ")";
-        }
-        ss << "}\n";
-        ss << "=================\n";
-        return ss.str();
-    }
-    std::string encode_state() {
-        int i, j;
-        std::stringstream ss;
-        ss << cur_player << "\n";
-        for (i = 0; i < SIZE; i++) {
-            for (j = 0; j < SIZE-1; j++) {
-                ss << board[i][j] << " ";
-            }
-            ss << board[i][j] << "\n";
-        }
-        ss << next_valid_spots.size() << "\n";
-        for (size_t i = 0; i < next_valid_spots.size(); i++) {
-            Point p = next_valid_spots[i];
-            ss << p.x << " " << p.y << "\n";
-        }
-        return ss.str();
-    }
-    */
+    
 };
-/*
-struct Point {
-    int x, y;
-};
-*/
+
+// bulid tree
+void butree(OthelloBoard& root, int h){
+    
+    if(root.deth > h) return;
+    
+    for(auto it:root.next_valid_spots){
+        OthelloBoard ch(root);
+        ch.put_disc(it);
+        root.child.push_back(ch);
+        butree(ch , h);
+    }
+}
+
+//find leaf and count Q_value
+void traval_tree(OthelloBoard& root){
+    
+    
+}
 
 
 int player;
@@ -340,8 +296,8 @@ void write_valid_spot(std::ofstream& fout) {
     int index = (rand() % n_valid_spots);
     Point p = next_valid_spots[index];
     ///The Queen's Gambit
-
-
+    OthelloBoard root(board);
+    
 
     // Remember to flush the output to ensure the last action is written to file.
     ///output my choose
