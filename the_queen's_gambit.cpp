@@ -7,6 +7,8 @@
 
 #include <sstream>
 
+using namespace std;
+
 int value_map[64] = {90,-60,10,10,10,10,-60,90,
                      -60,-80,5,5,5,5,-80,-60,
                      10,5,1,1,1,1,5,10,
@@ -122,6 +124,9 @@ private:
         }
     }
 public:
+    OthelloBoard(){
+        
+    }
     //consturct
     OthelloBoard(std::array<std::array<int, SIZE>, SIZE> a) {
         for(int i=0;i<SIZE;i++){
@@ -247,7 +252,7 @@ public:
 // bulid tree
 void butree(OthelloBoard& root, int h){
     
-    if(root.deth > h) return;
+    if(root.deth >= h) return;
     
     for(auto it:root.next_valid_spots){
         OthelloBoard ch(root);
@@ -258,9 +263,37 @@ void butree(OthelloBoard& root, int h){
 }
 
 //find leaf and count Q_value
-void traval_tree(OthelloBoard& root){
-    
-    
+int minimax(OthelloBoard& node ,int depth, bool MorU){
+    if(depth == 0 && node.next_valid_spots.empty()){
+        node.set_Q_value();
+        return node.Q_value;
+    }
+    //my turn
+    if(MorU){
+        node.Q_value = -214700000;
+        for(auto& it:node.child){
+            int child_value = minimax(it, depth - 1, false);
+            node.Q_value = std::max(node.Q_value, child_value);
+            node.alpha = std::max(node.alpha, child_value);
+            if(node.beta <= node.alpha){
+                break;
+            }
+        }
+        return node.Q_value;
+    }
+    //you turn
+    else{
+        node.Q_value = 214700000;
+        for(auto& it:node.child){
+            int child_value = minimax(it, depth - 1, true);
+            node.Q_value = std::max(node.Q_value, child_value);
+            node.beta = std::min(node.beta, child_value);
+            if(node.beta <= node.alpha){
+                break;
+            }
+        }
+        return node.Q_value;
+    }
 }
 
 
@@ -295,13 +328,26 @@ void write_valid_spot(std::ofstream& fout) {
     // Choose random spot. (Not random uniform here)
     int index = (rand() % n_valid_spots);
     Point p = next_valid_spots[index];
+    fout << p.x << " " << p.y << std::endl;
     ///The Queen's Gambit
     OthelloBoard root(board);
-    
-
+    root.get_valid_spots();
+    butree(root, 10);
+    minimax(root, 10, true);
+    int QQ = -214700000;
+    Point pick;
+    auto it = root.child.begin();
+    auto Pit = root.next_valid_spots.begin();
+    for(;it!=root.child.end();it++,Pit++){
+        if(QQ > it->Q_value){
+            QQ = it->Q_value;
+            pick = *Pit;
+        }
+    }
     // Remember to flush the output to ensure the last action is written to file.
     ///output my choose
-    fout << p.x << " " << p.y << std::endl;
+    //fout << p.x << " " << p.y << std::endl;
+    fout << pick.x << " " << pick.y << std::endl;
     fout.flush();
 }
 
