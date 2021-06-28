@@ -45,9 +45,9 @@ public:
     };
     static const int SIZE = 8;
     const std::array<Point, 8> directions{{
-        Point(-1, -1), Point(-1, 0), Point(-1, 1),
-        Point(0, -1), /*{0, 0}, */Point(0, 1),
-        Point(1, -1), Point(1, 0), Point(1, 1)
+        Point(-1, -1), Point(-1,0), Point(-1, 1),
+        Point(0, -1)              , Point(0, 1),
+        Point(1, -1),  Point(1, 0), Point(1, 1)
     }};
     std::array<std::array<int, SIZE>, SIZE> board;
     std::vector<Point> next_valid_spots;
@@ -55,14 +55,14 @@ public:
     int cur_player;
     bool done;
     int winner;
-    
+
     int alpha;
     int beta;
     int Q_value;
     int deth;
     OthelloBoard* parent = nullptr;
     std::vector<OthelloBoard> child;
-    
+
 private:
     int get_next_player(int player) const {
         return 3 - player;
@@ -125,7 +125,7 @@ private:
     }
 public:
     OthelloBoard(){
-        
+
     }
     //consturct
     OthelloBoard(std::array<std::array<int, SIZE>, SIZE> a) {
@@ -143,9 +143,9 @@ public:
         beta = 214700000;
         deth = 0;
     }
-    
+
     //copy
-    OthelloBoard(OthelloBoard& a){
+    OthelloBoard(const OthelloBoard& a){
         for(int i=0;i<SIZE;i++){
             for(int j=0;j<SIZE;j++){
                 board[i][j] = a.board[i][j];
@@ -159,11 +159,10 @@ public:
         beta = a.beta;
         done = a.done;
         winner = a.winner;
-        
+
         deth = a.deth + 1;
-        parent = &a;
         //remember to update next_valid_spots
-        
+
     }
     //count Q_value
     void set_Q_value(){
@@ -246,16 +245,17 @@ public:
         }
         return true;
     }
-    
+
 };
 
 // bulid tree
 void butree(OthelloBoard& root, int h){
-    
+
     if(root.deth >= h) return;
-    
+
     for(auto it:root.next_valid_spots){
         OthelloBoard ch(root);
+        ch.parent = &root;
         ch.put_disc(it);
         root.child.push_back(ch);
         butree(ch , h);
@@ -330,8 +330,11 @@ void write_valid_spot(std::ofstream& fout) {
     Point p = next_valid_spots[index];
     fout << p.x << " " << p.y << std::endl;
     ///The Queen's Gambit
+
     OthelloBoard root(board);
+
     root.get_valid_spots();
+
     butree(root, 10);
     minimax(root, 10, true);
     int QQ = -214700000;
@@ -348,6 +351,7 @@ void write_valid_spot(std::ofstream& fout) {
     ///output my choose
     //fout << p.x << " " << p.y << std::endl;
     fout << pick.x << " " << pick.y << std::endl;
+
     fout.flush();
 }
 
